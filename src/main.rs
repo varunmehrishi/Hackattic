@@ -15,12 +15,11 @@ trait Hackattic {
     type Problem: DeserializeOwned + Debug;
     type Answer: Serialize + Debug;
 
-    fn solve(&self, problem: Self::Problem) -> Result<Self::Answer>;
-    fn challenge_name(&self) -> &'static str;
-    fn problem_url(&self) -> String {
+    fn solve(problem: Self::Problem) -> Result<Self::Answer>;
+    fn problem_url() -> String {
         format!("https://hackattic.com/challenges/{}/problem/", Self::NAME)
     }
-    fn solve_url(&self) -> String {
+    fn solve_url() -> String {
         format!("https://hackattic.com/challenges/{}/solve/", Self::NAME)
     }
 }
@@ -42,17 +41,17 @@ async fn main() -> Result<()> {
         anyhow::bail!("Challenge name not provided")
     }
 
-    let v = match args[1].as_str() {
-        HelpMeUnpack::NAME => solve(HelpMeUnpack {}, client).await?,
+    let response = match args[1].as_str() {
+        HelpMeUnpack::NAME => solve::<HelpMeUnpack>(client).await?,
         _ => anyhow::bail!("No such challenge found"),
     };
 
-    info!(v);
+    info!("{}", response);
 
     Ok(())
 }
 
-async fn solve(solver: impl Hackattic, client: Client) -> Result<String> {
+async fn solve<T: Hackattic>(client: Client) -> Result<String> {
     let context = HackatticContext::global();
     let mut map = HashMap::new();
     map.insert("access_token", context.access_token.as_str());
@@ -60,9 +59,9 @@ async fn solve(solver: impl Hackattic, client: Client) -> Result<String> {
         map.insert("playground", "1");
     }
 
-    debug!("{}", solver.problem_url());
+    debug!("{}", T::problem_url());
 
-    let resp = client.get(solver.problem_url()).query(&map).send().await?;
+    let resp = client.get(T::problem_url()).query(&map).send().await?;
 
     debug!("{:?}", resp);
 
@@ -75,14 +74,14 @@ async fn solve(solver: impl Hackattic, client: Client) -> Result<String> {
 
     info!("{:?}", problem);
 
-    let ans = solver.solve(problem)?;
+    let ans = T::solve(problem)?;
 
     let string = serde_json::to_string(&ans).context("Unable to serialize")?;
 
     info!("{}", string);
 
     let resp = client
-        .post(solver.solve_url())
+        .post(T::solve_url())
         .query(&map)
         .json(&ans)
         .send()

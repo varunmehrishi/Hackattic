@@ -34,7 +34,7 @@ impl Hackattic for HelpMeUnpack {
     type Problem = HackAtticProblem;
     type Answer = HackAtticAnswer;
 
-    fn solve(&self, problem: Self::Problem) -> Result<Self::Answer> {
+    fn solve(problem: Self::Problem) -> Result<Self::Answer> {
         let eng = general_purpose::STANDARD.decode(problem.bytes)?;
 
         let mut iter = eng.iter().copied();
@@ -54,9 +54,5 @@ impl Hackattic for HelpMeUnpack {
             double,
             big_endian_double,
         })
-    }
-
-    fn challenge_name(&self) -> &'static str {
-        Self::NAME
     }
 }
