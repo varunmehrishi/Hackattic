@@ -4,13 +4,13 @@ use base64::{engine::general_purpose, Engine as _};
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Debug)]
-pub struct HackAtticProblem {
+pub struct HelpMeUnpackProblem {
     bytes: String,
 }
 
 #[derive(Serialize, Debug)]
 #[serde(rename = "")]
-pub struct HackAtticAnswer {
+pub struct HelpMeUnpackAnswer {
     int: i32,
     uint: u32,
     short: i16,
@@ -31,8 +31,8 @@ fn take<const N: usize>(it: &mut impl Iterator<Item = u8>) -> Result<[u8; N]> {
 
 impl Hackattic for HelpMeUnpack {
     const NAME: &'static str = "help_me_unpack";
-    type Problem = HackAtticProblem;
-    type Answer = HackAtticAnswer;
+    type Problem = HelpMeUnpackProblem;
+    type Answer = HelpMeUnpackAnswer;
 
     fn solve(problem: Self::Problem) -> Result<Self::Answer> {
         let eng = general_purpose::STANDARD.decode(problem.bytes)?;
@@ -46,7 +46,7 @@ impl Hackattic for HelpMeUnpack {
         let double = f64::from_le_bytes(take::<8>(&mut iter)?);
         let big_endian_double = f64::from_be_bytes(take::<8>(&mut iter)?);
 
-        Ok(HackAtticAnswer {
+        Ok(HelpMeUnpackAnswer {
             int,
             uint,
             short,

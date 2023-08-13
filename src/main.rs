@@ -7,6 +7,8 @@ use tracing::*;
 
 mod help_me_unpack;
 use help_me_unpack::HelpMeUnpack;
+mod mini_miner;
+use mini_miner::MiniMiner;
 mod hackattic_context;
 use hackattic_context::HackatticContext;
 
@@ -43,6 +45,7 @@ async fn main() -> Result<()> {
 
     let response = match args[1].as_str() {
         HelpMeUnpack::NAME => solve::<HelpMeUnpack>(client).await?,
+        MiniMiner::NAME => solve::<MiniMiner>(client).await?,
         _ => anyhow::bail!("No such challenge found"),
     };
 
