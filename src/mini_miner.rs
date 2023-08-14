@@ -1,5 +1,5 @@
 use super::Hackattic;
-use anyhow::{anyhow, Result};
+use anyhow::{Context, Result};
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use serde_tuple::{Deserialize_tuple, Serialize_tuple};
@@ -7,39 +7,26 @@ use sha2::{
     digest::generic_array::{typenum, GenericArray},
     Digest, Sha256,
 };
+use std::sync::Arc;
 use tracing::info;
-use std::borrow::Cow;
 
 #[derive(Deserialize, Debug)]
 pub struct MiniMinerProblem {
     pub difficulty: u32,
-    pub block: ProblemBlock,
+    pub block: Block,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct ProblemBlock {
-    pub data: Vec<Data>,
+pub struct Block {
+    pub data: Arc<Vec<Data>>,
     pub nonce: Option<i32>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Block<'a> {
-    pub data: Cow<'a, Vec<Data>>,
-    pub nonce: Option<i32>,
-}
-
-impl<'a> Block<'a> {
+impl Block {
     pub fn with_nonce(&self, nonce: i32) -> Self {
         Block {
-            data: self.data.clone(),
+            data: Arc::clone(&self.data),
             nonce: Some(nonce),
-        }
-    }
-
-    pub fn from(block: ProblemBlock) -> Self {
-        Block {
-            data: Cow::Owned(block.data),
-            nonce: block.nonce,
         }
     }
 }
@@ -64,25 +51,20 @@ impl Hackattic for MiniMiner {
     type Answer = MiniMinerAnswer;
 
     fn solve(problem: Self::Problem) -> Result<Self::Answer> {
-        let difficulty = problem.difficulty;
-
-        let block = Block::from(problem.block);
-
         let found_block = (0..=i32::MAX)
             .into_par_iter()
-            .map(|nonce| block.with_nonce(nonce))
-            .find_any(|block| is_block_valid(&block, difficulty));
+            .map(|nonce| problem.block.with_nonce(nonce))
+            .find_any(|block| is_block_valid(block, problem.difficulty));
 
         info!("{found_block:?}");
 
         if let Some(valid_block) = found_block {
             Ok(MiniMinerAnswer {
-                nonce: valid_block.nonce.expect("None nonce"),
+                nonce: valid_block.nonce.context("nonce is None")?,
             })
         } else {
-            Err(anyhow!("No block found"))
+            anyhow::bail!("No block found")
         }
-
     }
 }
 
@@ -126,14 +108,14 @@ fn is_block_valid(block: &Block, difficulty: u32) -> bool {
     let s = serde_json::to_string(block).expect("Unable to serialize");
     let hash = calculate_sha256(s);
 
-    check_difficulty(&hash, difficulty)
+    check_difficulty(hash.as_ref(), difficulty)
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::mini_miner::{calculate_sha256, check_difficulty};
-
     use super::Block;
+    use super::{calculate_sha256, check_difficulty};
+    use std::sync::Arc;
 
     #[test]
     fn test_check_difficulty() {
@@ -151,7 +133,7 @@ mod tests {
     #[test]
     fn test_empty_block_with_known_nonce() {
         let b = Block {
-            data: Cow::owned(vec![]),
+            data: Arc::new(vec![]),
             nonce: Some(45),
         };
 
