@@ -11,6 +11,8 @@ mod mini_miner;
 use mini_miner::MiniMiner;
 mod hackattic_context;
 use hackattic_context::HackatticContext;
+mod password_hashing;
+use password_hashing::PasswordHashing;
 
 trait Hackattic {
     const NAME: &'static str;
@@ -30,7 +32,7 @@ trait Hackattic {
 async fn main() -> Result<()> {
     HackatticContext::init()?;
     let subscriber = tracing_subscriber::FmtSubscriber::builder()
-        .with_max_level(Level::INFO)
+        .with_max_level(Level::DEBUG)
         .finish();
     tracing::subscriber::set_global_default(subscriber)
         .context("setting default tracing subscriber failed")?;
@@ -46,6 +48,7 @@ async fn main() -> Result<()> {
     let response = match args[1].as_str() {
         HelpMeUnpack::NAME => solve::<HelpMeUnpack>(client).await?,
         MiniMiner::NAME => solve::<MiniMiner>(client).await?,
+        PasswordHashing::NAME => solve::<PasswordHashing>(client).await?,
         _ => anyhow::bail!("No such challenge found"),
     };
 
