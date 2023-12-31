@@ -13,6 +13,8 @@ mod hackattic_context;
 use hackattic_context::HackatticContext;
 mod password_hashing;
 use password_hashing::PasswordHashing;
+mod tales_of_ssl;
+use tales_of_ssl::TalesOfSsl;
 
 trait Hackattic {
     const NAME: &'static str;
@@ -49,6 +51,7 @@ async fn main() -> Result<()> {
         HelpMeUnpack::NAME => solve::<HelpMeUnpack>(client).await?,
         MiniMiner::NAME => solve::<MiniMiner>(client).await?,
         PasswordHashing::NAME => solve::<PasswordHashing>(client).await?,
+        TalesOfSsl::NAME => solve::<TalesOfSsl>(client).await?,
         _ => anyhow::bail!("No such challenge found"),
     };
 
