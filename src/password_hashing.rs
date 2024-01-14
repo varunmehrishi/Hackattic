@@ -57,7 +57,7 @@ impl Hackattic for PasswordHashing {
     type Problem = PasswordHashingProblem;
     type Answer = PasswordHashingAnswer;
 
-    fn solve(problem: Self::Problem) -> Result<Self::Answer> {
+    async fn solve(problem: Self::Problem) -> Result<Self::Answer> {
         debug!("{:?}", problem);
         let sha256 = encode_lower(&calculate_sha256(&problem.password));
         debug!(sha256);

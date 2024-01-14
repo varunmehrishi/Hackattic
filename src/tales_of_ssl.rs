@@ -40,7 +40,7 @@ impl Hackattic for TalesOfSsl {
 
     type Answer = SslAnswer;
 
-    fn solve(problem: Self::Problem) -> anyhow::Result<Self::Answer> {
+    async fn solve(problem: Self::Problem) -> anyhow::Result<Self::Answer> {
         debug!("{:?}", problem);
         let mut builder = X509Builder::new()?;
 

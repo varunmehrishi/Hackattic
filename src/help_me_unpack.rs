@@ -34,7 +34,7 @@ impl Hackattic for HelpMeUnpack {
     type Problem = HelpMeUnpackProblem;
     type Answer = HelpMeUnpackAnswer;
 
-    fn solve(problem: Self::Problem) -> Result<Self::Answer> {
+    async fn solve(problem: Self::Problem) -> Result<Self::Answer> {
         let eng = general_purpose::STANDARD.decode(problem.bytes)?;
 
         let mut iter = eng.iter().copied();

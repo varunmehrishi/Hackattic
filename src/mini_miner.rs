@@ -50,7 +50,7 @@ impl Hackattic for MiniMiner {
     type Problem = MiniMinerProblem;
     type Answer = MiniMinerAnswer;
 
-    fn solve(problem: Self::Problem) -> Result<Self::Answer> {
+    async fn solve(problem: Self::Problem) -> Result<Self::Answer> {
         let found_block = (0..=i32::MAX)
             .into_par_iter()
             .map(|nonce| problem.block.with_nonce(nonce))

@@ -15,13 +15,15 @@ mod password_hashing;
 use password_hashing::PasswordHashing;
 mod tales_of_ssl;
 use tales_of_ssl::TalesOfSsl;
+mod backup_restore;
+use backup_restore::BackupRestore;
 
 trait Hackattic {
     const NAME: &'static str;
     type Problem: DeserializeOwned + Debug;
     type Answer: Serialize + Debug;
 
-    fn solve(problem: Self::Problem) -> Result<Self::Answer>;
+    async fn solve(problem: Self::Problem) -> Result<Self::Answer>;
     fn problem_url() -> String {
         format!("https://hackattic.com/challenges/{}/problem/", Self::NAME)
     }
@@ -52,6 +54,7 @@ async fn main() -> Result<()> {
         MiniMiner::NAME => solve::<MiniMiner>(client).await?,
         PasswordHashing::NAME => solve::<PasswordHashing>(client).await?,
         TalesOfSsl::NAME => solve::<TalesOfSsl>(client).await?,
+        BackupRestore::NAME => solve::<BackupRestore>(client).await?,
         _ => anyhow::bail!("No such challenge found"),
     };
 
@@ -83,7 +86,7 @@ async fn solve<T: Hackattic>(client: Client) -> Result<String> {
 
     info!("{:?}", problem);
 
-    let ans = T::solve(problem)?;
+    let ans = T::solve(problem).await?;
 
     let string = serde_json::to_string(&ans).context("Unable to serialize")?;
 
