@@ -17,6 +17,8 @@ mod tales_of_ssl;
 use tales_of_ssl::TalesOfSsl;
 mod backup_restore;
 use backup_restore::BackupRestore;
+mod the_one_with_redis;
+use the_one_with_redis::TheOneWithRedis;
 
 trait Hackattic {
     const NAME: &'static str;
@@ -55,6 +57,7 @@ async fn main() -> Result<()> {
         PasswordHashing::NAME => solve::<PasswordHashing>(client).await?,
         TalesOfSsl::NAME => solve::<TalesOfSsl>(client).await?,
         BackupRestore::NAME => solve::<BackupRestore>(client).await?,
+        TheOneWithRedis::NAME => solve::<TheOneWithRedis>(client).await?,
         _ => anyhow::bail!("No such challenge found"),
     };
 

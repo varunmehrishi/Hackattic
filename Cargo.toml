@@ -10,6 +10,7 @@ anyhow = "1.0.72"
 base16 = "0.2.1"
 base64 = "0.21.2"
 flate2 = "1.0.28"
+hex = { version = "0.4.3", features = ["serde"] }
 hmac = "0.12.1"
 openssl = { version = "0.10.62", features = ["vendored"] }
 rayon = "1.7.0"
