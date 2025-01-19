@@ -27,3 +27,5 @@ tracing-subscriber = "0.3.17"
 rdb-parser = { git = "https://github.com/varunmehrishi/rdb-parser.git"}
 bstring = "0.1.0"
 bstr = "1.11.0"
+websocket = "0.27.1"
+regex = "1.11.1"

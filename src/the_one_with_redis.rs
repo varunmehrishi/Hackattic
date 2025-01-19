@@ -1,14 +1,10 @@
-use std::{
-    ascii::AsciiExt,
-    collections::{HashMap, HashSet},
-};
+use std::collections::{HashMap, HashSet};
 
 use base64::{engine::general_purpose, Engine as _};
 use bstr::BString;
 use rdb_parser::Construct;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use tracing::info;
 
 use crate::Hackattic;
 

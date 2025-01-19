@@ -19,6 +19,8 @@ mod backup_restore;
 use backup_restore::BackupRestore;
 mod the_one_with_redis;
 use the_one_with_redis::TheOneWithRedis;
+mod websocket_chit_chat;
+use websocket_chit_chat::WebsocketChitChat;
 
 trait Hackattic {
     const NAME: &'static str;
@@ -58,6 +60,7 @@ async fn main() -> Result<()> {
         TalesOfSsl::NAME => solve::<TalesOfSsl>(client).await?,
         BackupRestore::NAME => solve::<BackupRestore>(client).await?,
         TheOneWithRedis::NAME => solve::<TheOneWithRedis>(client).await?,
+        WebsocketChitChat::NAME => solve::<WebsocketChitChat>(client).await?,
         _ => anyhow::bail!("No such challenge found"),
     };
 
