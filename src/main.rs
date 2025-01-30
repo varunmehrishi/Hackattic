@@ -21,6 +21,8 @@ mod the_one_with_redis;
 use the_one_with_redis::TheOneWithRedis;
 mod websocket_chit_chat;
 use websocket_chit_chat::WebsocketChitChat;
+mod touch_tone_dialing;
+use touch_tone_dialing::TouchToneDialing;
 
 trait Hackattic {
     const NAME: &'static str;
@@ -61,6 +63,7 @@ async fn main() -> Result<()> {
         BackupRestore::NAME => solve::<BackupRestore>(client).await?,
         TheOneWithRedis::NAME => solve::<TheOneWithRedis>(client).await?,
         WebsocketChitChat::NAME => solve::<WebsocketChitChat>(client).await?,
+        TouchToneDialing::NAME => solve::<TouchToneDialing>(client).await?,
         _ => anyhow::bail!("No such challenge found"),
     };
 
