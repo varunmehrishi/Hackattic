@@ -33,3 +33,5 @@ hound = "3.5.1"
 rustfft = "6.2.0"
 rqrr = "0.9.0"
 image = "0.25.5"
+ocrs = { version = "0.10.0"}
+rten = { version = "0.16.0", features = ["mmap"] }
